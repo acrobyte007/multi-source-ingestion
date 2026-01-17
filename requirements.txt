@@ -1,0 +1,2 @@
+python-dotenv==1.2.1
+newsapi-python==0.2.7
