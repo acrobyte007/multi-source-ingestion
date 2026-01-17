@@ -7,14 +7,12 @@ load_dotenv()
 news_client = NewsApiClient(api_key=os.getenv("NEWS_API_KEY"))
 
 def fetch_news(topic_name: str, language: str = "en", num_articles: int = 1):
-    articles = news_client.get_top_headlines(
+    articles = news_client.get_everything(
         q=topic_name,
-        language=language,
-        page_size=num_articles
+        language=language
     )
 
     result = {}
-
     for i, article in enumerate(articles["articles"], start=1):
         result[i] = {
             "title": article.get("title"),
@@ -25,3 +23,5 @@ def fetch_news(topic_name: str, language: str = "en", num_articles: int = 1):
         }
 
     return result
+
+print(fetch_news("artificial intelligence", "en", num_articles=2))
