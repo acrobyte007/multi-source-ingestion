@@ -2,7 +2,25 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
+.venv
+\venv
+\*
+\env\
+\env.bak\
+\env\*
+\env.bak\*
+\env\*
+\env.bak\*
+\env\*
+\env.bak\*
+\env\*
+\env.bak\*
+\env\*
+\env.bak\*
+\env\*
+\env.bak\*
+\env\*
+\env.bak\*
 # C extensions
 *.so
 
