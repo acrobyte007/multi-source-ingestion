@@ -1,26 +1,28 @@
 import requests
 from bs4 import BeautifulSoup
-from collections import defaultdict
 import re
+import json
+from datetime import datetime, timezone
 
-def scrape_headers_with_content_and_links_as_text(url):
+def scrape_page_as_title_and_content(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
     def clean_text(text):
-        text = text.strip()
-        text = " ".join(text.split())
-        return text
+        text = re.sub(r'\s+', ' ', text)
+        return text.strip()
 
     headers = soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
-    nested_json = defaultdict(list)
+
+    if not headers:
+        return {"title": "", "content": ""}
+
+    title = clean_text(headers[0].get_text())
+
+    content_parts = []
 
     for header in headers:
-        header_type = header.name
         header_level = int(header.name[1])
-        header_text = clean_text(header.get_text())
-
-        content = []
 
         for sibling in header.next_siblings:
             if sibling.name and sibling.name.startswith("h"):
@@ -31,23 +33,24 @@ def scrape_headers_with_content_and_links_as_text(url):
                 for a in sibling.find_all("a", href=True):
                     link_text = clean_text(a.get_text())
                     link_url = a["href"]
-                    content.append(f"{link_text} ({link_url})")
+                    content_parts.append(f"{link_text} ({link_url})")
 
                 text = clean_text(sibling.get_text())
                 if text:
-                    content.append(text)
+                    content_parts.append(text)
 
-        nested_json[header_type].append({
-            "header": header_text,
-            "content": content
-        })
+    content = " ".join(dict.fromkeys(content_parts))
 
-    return dict(nested_json)
+    return {
+        "title": title,
+        "content": content,
+        "source": "web_scraper",
+        "url": url,
+        "fetched_at": datetime.now(timezone.utc).isoformat()
+    }
 
-
-import json
 
 url = "https://docs.sqlalchemy.org/en/20/"
-data = scrape_headers_with_content_and_links_as_text(url)
+data = scrape_page_as_title_and_content(url)
 
-print(json.dumps(data, indent=4))
+print(json.dumps(data, indent=4, ensure_ascii=False))
