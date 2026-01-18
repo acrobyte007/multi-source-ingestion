@@ -141,3 +141,9 @@ def extract_csv_data_as_flat_json(csv_file_path: str):
 
     return extract_csv_data_as_nested_json(csv_file_path, title_column, content_column)
 
+if __name__ == "__main__":
+    csv_path = "E:\ETL\multi-source-ingestion\Articles.csv"
+    data = extract_csv_data_as_flat_json(
+        csv_path
+    )
+    print(json.dumps(data, indent=4, ensure_ascii=False))
