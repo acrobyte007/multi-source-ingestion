@@ -31,15 +31,15 @@ def fetch_news(topic_name: str, language: str = "en", num_articles: int = 2, ret
                 sort_by="publishedAt"
             )
 
-            result = {}
+            result =[]
             for i, article in enumerate(articles["articles"], start=1):
-                result[i] = {
+                result.append ({
                     "title": clean_content(article.get("title")),
                     "content": clean_content(article.get("content")),
                     "source": "newsapi",
                     "url": article.get("url"),
                     "fetched_at": datetime.now(timezone.utc).isoformat()
-                }
+                })
 
             return result
 

@@ -8,31 +8,30 @@ from fetchers.web_scraper import scrape_page_as_title_and_content
 
 
 def fetch_all_sources(url: str, csv_path: str, news_query: str, number_of_news: int,news_language: str="en"):
-    # csv_data = extract_csv_data_as_flat_json(csv_path)
+    csv_data = extract_csv_data_as_flat_json(csv_path)
 
     news_data = fetch_news(news_query,news_language, number_of_news)
     web_data = scrape_page_as_title_and_content(url)
+    combined_data = []
+    if isinstance(csv_data, list):
+        combined_data.extend(csv_data)
 
-    def get_top_level_dicts(d):
-        return {k: v for k, v in d.items() if isinstance(v, dict)}
+    if isinstance(news_data, list):
+        combined_data.extend(news_data)
+    if isinstance(web_data, dict):
+        combined_data.append(web_data)
+    output_dir = r"E:\ETL\multi-source-ingestion\output"
+    os.makedirs(output_dir, exist_ok=True)
 
-    # csv_dicts = get_top_level_dicts(csv_data)
-    news_dicts = get_top_level_dicts(news_data)
+    output_file = os.path.join(output_dir, "articles.json")
 
-    # Combine them
-    combined_data = {}
-    # combined_data.update(csv_dicts)
-    combined_data.update(news_dicts)
-    combined_data.update(web_data)
-    with open("articles.json", "w", encoding="utf-8") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(combined_data, f, ensure_ascii=False, indent=4)
 
-    print("Saved combined data to articles.json")
-
-
+    print(f"Saved combined data to {output_file}")
 if __name__ == "__main__":
     url = "https://docs.sqlalchemy.org/en/20/"
-    csv_path = "ETL\multi-source-ingestion\Articles.csv"
+    csv_path = "E:\ETL\multi-source-ingestion\Articles.csv"
     news_query = "AI"
     number_of_news = 2
     news_language = "en"
